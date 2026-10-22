@@ -16,8 +16,10 @@ export async function UserMenu() {
     <div className="dropdown dropdown-end">
       <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar avatar-placeholder">
         {user.image ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img className="w-8 rounded-full" src={user.image} alt="" />
+          <div className="w-8 rounded-full">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={user.image} alt="" />
+          </div>
         ) : (
           <div className="bg-neutral text-neutral-content w-8 rounded-full">
             <span className="text-xs">{user.name.slice(0, 1).toUpperCase()}</span>
