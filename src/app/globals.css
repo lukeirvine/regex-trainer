@@ -10,11 +10,14 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* Regex and sample strings: keep whitespace visible and exact. */
-.code-text {
-  font-family: var(--font-mono);
-  white-space: pre;
-  font-variant-ligatures: none;
+/* Regex and sample strings: keep whitespace visible and exact.
+   Layered so utilities (e.g. whitespace-pre-wrap) can still override it. */
+@layer components {
+  .code-text {
+    font-family: var(--font-mono);
+    white-space: pre;
+    font-variant-ligatures: none;
+  }
 }
 
 .match-hl {
