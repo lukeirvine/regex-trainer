@@ -103,7 +103,7 @@ async function MasteryBadge({ mode }: { mode: Mode }) {
   return (
     <span className="tooltip font-normal" data-tip="Completions">
       <span
-        className="badge badge-accent text-accent-content gap-1 font-semibold tabular-nums"
+        className="badge badge-soft badge-warning border-warning gap-1 font-semibold tabular-nums"
         aria-label={label}
       >
         <span aria-hidden="true">🏆</span>
