@@ -12,7 +12,7 @@ JavaScript regex flavour, matching browsers, Node and VS Code search.
 ## Stack
 
 - Next.js 16 (App Router, Cache Components), Tailwind CSS v4, daisyUI 5
-- Auth.js v5 with GitHub OAuth and JWT sessions, so there are no auth tables
+- Auth.js v5 with GitHub and Google OAuth and JWT sessions, so there are no auth tables
 - Drizzle ORM. Production uses Neon Postgres (Vercel Marketplace); local dev uses embedded [PGlite](https://pglite.dev) in `./.pglite`
 
 ## Local development
@@ -29,9 +29,12 @@ npm run dev
 With no other env vars set:
 
 - **Database:** PGlite is created and migrated automatically on first request.
-- **Auth:** the sign-in page offers **Continue as dev user** instead of GitHub. This fallback is never enabled in production builds.
+- **Auth:** the sign-in page offers **Continue as dev user** instead of GitHub or Google. This fallback is never enabled in production builds.
 
-To test real GitHub sign-in locally, create a second OAuth app (see below) with callback `http://localhost:3000/api/auth/callback/github` and set `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET` in `.env.local`.
+To test real sign-in locally, set the env vars for either provider in `.env.local`. The dev fallback turns off as soon as one is set.
+
+- **GitHub:** create a second OAuth app (see below) with callback `http://localhost:3000/api/auth/callback/github`, then set `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET`.
+- **Google:** reuse the production client (see below), which already lists the localhost callback, then set `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET`.
 
 ### Scripts
 
@@ -50,12 +53,24 @@ To test real GitHub sign-in locally, create a second OAuth app (see below) with 
 3. **Create a GitHub OAuth app** at <https://github.com/settings/developers> → *New OAuth App*:
    - Homepage URL: `https://<your-domain>`
    - Authorization callback URL: `https://<your-domain>/api/auth/callback/github`
-4. **Add env vars** in Project → Settings → Environment Variables:
+4. **Set up Google sign-in** in [Google Cloud Console](https://console.cloud.google.com/) (new or existing project):
+   - **Google Auth Platform → Branding:** app name and support email.
+   - **Audience:** External, then **Publish app**. While it's in Testing, only listed test users can sign in.
+   - **Data access:** leave the default `openid`, `email` and `profile` scopes. These don't need Google's verification review.
+   - **Clients → Create client → Web application:**
+     - Authorized JavaScript origins: `https://<your-domain>` and `http://localhost:3000`
+     - Authorized redirect URIs: `https://<your-domain>/api/auth/callback/google` and `http://localhost:3000/api/auth/callback/google`
+5. **Add env vars** in Project → Settings → Environment Variables:
    - `AUTH_SECRET`: `openssl rand -base64 32`
-   - `AUTH_GITHUB_ID` and `AUTH_GITHUB_SECRET`: from the OAuth app
-5. **Deploy.** The build command (`npm run build`) runs the migrations against Neon before building.
+   - `AUTH_GITHUB_ID` and `AUTH_GITHUB_SECRET`: from the GitHub OAuth app
+   - `AUTH_GOOGLE_ID` and `AUTH_GOOGLE_SECRET`: from the Google client
+6. **Deploy.** The build command (`npm run build`) runs the migrations against Neon before building.
 
-GitHub OAuth apps allow only one callback URL each. Login therefore works on the production domain and on localhost (with its own OAuth app), but not on Vercel preview deployments.
+Each provider is optional: the sign-in page only shows buttons for the ones whose env vars are set.
+
+GitHub OAuth apps allow only one callback URL each, so GitHub login needs a separate OAuth app for localhost. A Google client can list several redirect URIs, so one client covers both. Neither provider accepts wildcard callbacks, so login doesn't work on Vercel preview deployments.
+
+Users are identified per provider, so signing in with GitHub and then Google gives the same person two separate progress records.
 
 To pull production env vars locally: `vercel link && vercel env pull .env.local`.
 
@@ -66,5 +81,5 @@ To pull production env vars locally: `vercel link && vercel env pull .env.local`
   - Each (user, mode) has one active `run`. `completions` rows hang off it.
   - Starting over stamps the run with `ended_at` and its completed/total counts, which become the reset history. A fresh run is then created on next use.
 - **Builder grading** (`src/lib/regex.ts`): a string counts as matched only when the regex's actual leftmost match covers the whole string. That's exactly what the highlighting shows, so alternation order matters (`a|ab` doesn't match `ab`), just like a find in your editor.
-- **Identity** is `github:<numeric id>` from the JWT (or `dev:local` in the dev fallback). `src/proxy.ts` only runs on `/app/**` and `/signin`: it sends signed-out visitors from `/app` to `/signin`, and signed-in visitors from `/signin` to `/app`. Every server action re-checks the session.
+- **Identity** is `<provider>:<account id>` from the JWT, e.g. `github:1234567`, `google:1098…`, or `dev:local` in the dev fallback. `src/proxy.ts` only runs on `/app/**` and `/signin`: it sends signed-out visitors from `/app` to `/signin`, and signed-in visitors from `/signin` to `/app`. Every server action re-checks the session.
 - **Routes:** `/` (landing page), `/cheatsheet` and `/signin` are public. The dashboard, quiz and builder live under `/app`.
