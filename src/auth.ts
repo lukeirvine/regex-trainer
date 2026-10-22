@@ -10,6 +10,9 @@ export const devLoginEnabled = !process.env.AUTH_GITHUB_ID && process.env.NODE_E
 
 export const signInProvider = devLoginEnabled ? "dev" : "github";
 
+/** Pages reachable without signing in. */
+const publicPaths = ["/signin", "/cheatsheet"];
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: devLoginEnabled
     ? [
@@ -25,9 +28,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: { signIn: "/signin" },
   trustHost: true,
   callbacks: {
-    // Used by the proxy: let anyone reach the sign-in page, require a session elsewhere.
+    // Used by the proxy: let anyone reach the public pages, require a session elsewhere.
     authorized({ auth, request }) {
-      if (request.nextUrl.pathname.startsWith("/signin")) return true;
+      const { pathname } = request.nextUrl;
+      if (publicPaths.some((p) => pathname === p || pathname.startsWith(`${p}/`))) return true;
       return !!auth?.user;
     },
     jwt({ token, account }) {

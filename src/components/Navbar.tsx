@@ -1,13 +1,30 @@
 import Link from "next/link";
 import { Suspense } from "react";
+import { getCurrentUser } from "@/lib/session";
 import { ThemeToggle } from "./ThemeToggle";
 import { UserMenu } from "./UserMenu";
 
-const links = [
+type NavLink = { href: string; label: string };
+
+const memberLinks: NavLink[] = [
   { href: "/quiz", label: "Quiz" },
   { href: "/builder", label: "Builder" },
-  { href: "/cheatsheet", label: "Cheat sheet" },
 ];
+
+const publicLinks: NavLink[] = [{ href: "/cheatsheet", label: "Cheat sheet" }];
+
+function NavLinks({ links }: { links: NavLink[] }) {
+  return links.map((l) => (
+    <Link key={l.href} href={l.href} className="btn btn-ghost btn-sm">
+      {l.label}
+    </Link>
+  ));
+}
+
+async function MemberLinks() {
+  const user = await getCurrentUser();
+  return user ? <NavLinks links={memberLinks} /> : null;
+}
 
 export function Navbar() {
   return (
@@ -19,11 +36,10 @@ export function Navbar() {
         </Link>
       </div>
       <nav className="flex items-center gap-1">
-        {links.map((l) => (
-          <Link key={l.href} href={l.href} className="btn btn-ghost btn-sm">
-            {l.label}
-          </Link>
-        ))}
+        <Suspense>
+          <MemberLinks />
+        </Suspense>
+        <NavLinks links={publicLinks} />
         <ThemeToggle />
         <Suspense fallback={<div className="skeleton size-8 rounded-full" />}>
           <UserMenu />

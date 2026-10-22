@@ -1,9 +1,16 @@
+import Link from "next/link";
 import { signOut } from "@/auth";
 import { getCurrentUser } from "@/lib/session";
 
 export async function UserMenu() {
   const user = await getCurrentUser();
-  if (!user) return null;
+  if (!user) {
+    return (
+      <Link href="/signin" className="btn btn-primary btn-sm">
+        Sign in
+      </Link>
+    );
+  }
 
   return (
     <div className="dropdown dropdown-end">
