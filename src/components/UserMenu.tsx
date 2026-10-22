@@ -27,10 +27,13 @@ export async function UserMenu() {
       <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-10 mt-2 w-52 p-2 shadow-lg">
         <li className="menu-title truncate">{user.name}</li>
         <li>
+          <Link href="/app">Dashboard</Link>
+        </li>
+        <li>
           <form
             action={async () => {
               "use server";
-              await signOut({ redirectTo: "/signin" });
+              await signOut({ redirectTo: "/" });
             }}
           >
             <button type="submit" className="w-full text-left">

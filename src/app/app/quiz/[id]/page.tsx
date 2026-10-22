@@ -11,13 +11,13 @@ export function generateStaticParams() {
   return quizQuestions.map((q) => ({ id: q.id }));
 }
 
-export async function generateMetadata({ params }: PageProps<"/quiz/[id]">): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<"/app/quiz/[id]">): Promise<Metadata> {
   const { id } = await params;
   const { index } = neighbours("quiz", id);
   return { title: `Quiz #${index + 1}` };
 }
 
-export default function QuizItemPage({ params }: PageProps<"/quiz/[id]">) {
+export default function QuizItemPage({ params }: PageProps<"/app/quiz/[id]">) {
   return (
     <Suspense fallback={<ItemSkeleton />}>
       <QuizItem params={params} />
@@ -25,7 +25,7 @@ export default function QuizItemPage({ params }: PageProps<"/quiz/[id]">) {
   );
 }
 
-async function QuizItem({ params }: { params: PageProps<"/quiz/[id]">["params"] }) {
+async function QuizItem({ params }: { params: PageProps<"/app/quiz/[id]">["params"] }) {
   const { id } = await params;
   const question = quizById[id];
   if (!question) notFound();
@@ -34,7 +34,7 @@ async function QuizItem({ params }: { params: PageProps<"/quiz/[id]">["params"] 
   return (
     <ItemFrame mode="quiz" id={id} group={topicById[question.topic].title}>
       {/* key resets component state when navigating between questions */}
-      <QuizQuestion key={id} question={question} nextHref={next ? `/quiz/${next}` : null} />
+      <QuizQuestion key={id} question={question} nextHref={next ? `/app/quiz/${next}` : null} />
     </ItemFrame>
   );
 }

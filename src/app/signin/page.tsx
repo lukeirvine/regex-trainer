@@ -34,7 +34,7 @@ export default function SignInPage({ searchParams }: PageProps<"/signin">) {
 async function SignInButton({ searchParams }: { searchParams: PageProps<"/signin">["searchParams"] }) {
   const { callbackUrl } = await searchParams;
   // Auth.js's default redirect callback discards anything that isn't same-origin.
-  const redirectTo = typeof callbackUrl === "string" ? callbackUrl : "/";
+  const redirectTo = typeof callbackUrl === "string" ? callbackUrl : "/app";
 
   return (
     <form

@@ -7,8 +7,8 @@ import { UserMenu } from "./UserMenu";
 type NavLink = { href: string; label: string };
 
 const memberLinks: NavLink[] = [
-  { href: "/quiz", label: "Quiz" },
-  { href: "/builder", label: "Builder" },
+  { href: "/app/quiz", label: "Quiz" },
+  { href: "/app/builder", label: "Builder" },
 ];
 
 const publicLinks: NavLink[] = [{ href: "/cheatsheet", label: "Cheat sheet" }];

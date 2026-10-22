@@ -1,4 +1,5 @@
 import NextAuth from "next-auth";
+import { NextResponse } from "next/server";
 import Credentials from "next-auth/providers/credentials";
 import GitHub from "next-auth/providers/github";
 
@@ -9,9 +10,6 @@ import GitHub from "next-auth/providers/github";
 export const devLoginEnabled = !process.env.AUTH_GITHUB_ID && process.env.NODE_ENV !== "production";
 
 export const signInProvider = devLoginEnabled ? "dev" : "github";
-
-/** Pages reachable without signing in. */
-const publicPaths = ["/signin", "/cheatsheet"];
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: devLoginEnabled
@@ -28,10 +26,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: { signIn: "/signin" },
   trustHost: true,
   callbacks: {
-    // Used by the proxy: let anyone reach the public pages, require a session elsewhere.
+    // Used by the proxy, which only runs on /app/** and /signin (see src/proxy.ts).
     authorized({ auth, request }) {
-      const { pathname } = request.nextUrl;
-      if (publicPaths.some((p) => pathname === p || pathname.startsWith(`${p}/`))) return true;
+      if (request.nextUrl.pathname === "/signin") {
+        // Already signed in: skip straight to the app.
+        return auth?.user ? NextResponse.redirect(new URL("/app", request.url)) : true;
+      }
       return !!auth?.user;
     },
     jwt({ token, account }) {

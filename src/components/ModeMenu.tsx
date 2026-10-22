@@ -35,7 +35,7 @@ export async function ModeMenu({ mode }: { mode: Mode }) {
             <progress className="progress progress-success w-full" value={pct} max={100} />
           </div>
           {continueId ? (
-            <Link href={`/${mode}/${continueId}`} className="btn btn-primary btn-sm">
+            <Link href={`/app/${mode}/${continueId}`} className="btn btn-primary btn-sm">
               {done === 0 ? "Start" : "Continue"}
             </Link>
           ) : (
@@ -61,7 +61,7 @@ export async function ModeMenu({ mode }: { mode: Mode }) {
                 return (
                   <Link
                     key={item.id}
-                    href={`/${mode}/${item.id}`}
+                    href={`/app/${mode}/${item.id}`}
                     className={`bg-base-100 hover:border-primary flex items-start gap-3 rounded-lg border p-3 transition-colors ${
                       completion ? "border-success/50" : "border-base-300"
                     }`}

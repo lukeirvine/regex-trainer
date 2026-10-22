@@ -129,7 +129,7 @@ export function BuilderChallenge({ challenge: c, nextHref }: { challenge: Challe
                 Next challenge <kbd className="kbd kbd-xs text-base-content">↵</kbd>
               </button>
             ) : (
-              <button className="btn btn-success btn-sm" onClick={() => router.push("/builder")}>
+              <button className="btn btn-success btn-sm" onClick={() => router.push("/app/builder")}>
                 Back to all challenges
               </button>
             )}

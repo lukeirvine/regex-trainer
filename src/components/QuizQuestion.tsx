@@ -125,7 +125,7 @@ export function QuizQuestion({ question: q, nextHref }: { question: Question; ne
                 Next question <kbd className="kbd kbd-sm text-base-content">↵</kbd>
               </button>
             ) : (
-              <button className="btn btn-primary" onClick={() => router.push("/quiz")}>
+              <button className="btn btn-primary" onClick={() => router.push("/app/quiz")}>
                 Back to all questions
               </button>
             )}

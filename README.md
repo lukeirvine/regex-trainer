@@ -66,4 +66,5 @@ To pull production env vars locally: `vercel link && vercel env pull .env.local`
   - Each (user, mode) has one active `run`. `completions` rows hang off it.
   - Starting over stamps the run with `ended_at` and its completed/total counts, which become the reset history. A fresh run is then created on next use.
 - **Builder grading** (`src/lib/regex.ts`): a string counts as matched only when the regex's actual leftmost match covers the whole string. That's exactly what the highlighting shows, so alternation order matters (`a|ab` doesn't match `ab`), just like a find in your editor.
-- **Identity** is `github:<numeric id>` from the JWT (or `dev:local` in the dev fallback). `src/proxy.ts` redirects signed-out visitors to `/signin`, and every server action re-checks the session.
+- **Identity** is `github:<numeric id>` from the JWT (or `dev:local` in the dev fallback). `src/proxy.ts` only runs on `/app/**` and `/signin`: it sends signed-out visitors from `/app` to `/signin`, and signed-in visitors from `/signin` to `/app`. Every server action re-checks the session.
+- **Routes:** `/` (landing page), `/cheatsheet` and `/signin` are public. The dashboard, quiz and builder live under `/app`.

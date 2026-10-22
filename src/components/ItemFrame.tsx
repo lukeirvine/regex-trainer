@@ -15,7 +15,7 @@ export function ItemFrame({ mode, id, group, children }: { mode: Mode; id: strin
         <div className="breadcrumbs py-0 text-sm">
           <ul>
             <li>
-              <Link href={`/${mode}`}>{modeLabels[mode]}</Link>
+              <Link href={`/app/${mode}`}>{modeLabels[mode]}</Link>
             </li>
             <li>{group}</li>
             <li className="text-base-content/60 tabular-nums">
@@ -32,17 +32,17 @@ export function ItemFrame({ mode, id, group, children }: { mode: Mode; id: strin
 
       <nav className="flex items-center justify-between gap-2">
         {prev ? (
-          <Link href={`/${mode}/${prev}`} className="btn btn-ghost btn-sm">
+          <Link href={`/app/${mode}/${prev}`} className="btn btn-ghost btn-sm">
             ← Previous
           </Link>
         ) : (
           <span />
         )}
-        <Link href={`/${mode}`} className="btn btn-ghost btn-sm">
+        <Link href={`/app/${mode}`} className="btn btn-ghost btn-sm">
           All {mode === "quiz" ? "questions" : "challenges"}
         </Link>
         {next ? (
-          <Link href={`/${mode}/${next}`} className="btn btn-ghost btn-sm">
+          <Link href={`/app/${mode}/${next}`} className="btn btn-ghost btn-sm">
             Next →
           </Link>
         ) : (
@@ -66,7 +66,7 @@ async function ItemStatus({ mode, id }: { mode: Mode; id: string }) {
         {progress.completed.size}/{progress.total} done
       </span>
       {upNext && (
-        <Link href={`/${mode}/${upNext}`} className="btn btn-xs btn-outline">
+        <Link href={`/app/${mode}/${upNext}`} className="btn btn-xs btn-outline">
           Next unfinished
         </Link>
       )}

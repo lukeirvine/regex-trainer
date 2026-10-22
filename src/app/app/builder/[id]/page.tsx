@@ -10,12 +10,12 @@ export function generateStaticParams() {
   return builderChallenges.map((c) => ({ id: c.id }));
 }
 
-export async function generateMetadata({ params }: PageProps<"/builder/[id]">): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps<"/app/builder/[id]">): Promise<Metadata> {
   const { id } = await params;
   return { title: builderById[id]?.title ?? "Builder" };
 }
 
-export default function BuilderItemPage({ params }: PageProps<"/builder/[id]">) {
+export default function BuilderItemPage({ params }: PageProps<"/app/builder/[id]">) {
   return (
     <Suspense fallback={<ItemSkeleton />}>
       <BuilderItem params={params} />
@@ -23,7 +23,7 @@ export default function BuilderItemPage({ params }: PageProps<"/builder/[id]">) 
   );
 }
 
-async function BuilderItem({ params }: { params: PageProps<"/builder/[id]">["params"] }) {
+async function BuilderItem({ params }: { params: PageProps<"/app/builder/[id]">["params"] }) {
   const { id } = await params;
   const challenge = builderById[id];
   if (!challenge) notFound();
@@ -31,7 +31,7 @@ async function BuilderItem({ params }: { params: PageProps<"/builder/[id]">["par
 
   return (
     <ItemFrame mode="builder" id={id} group={levelNames[challenge.level]}>
-      <BuilderChallenge key={id} challenge={challenge} nextHref={next ? `/builder/${next}` : null} />
+      <BuilderChallenge key={id} challenge={challenge} nextHref={next ? `/app/builder/${next}` : null} />
     </ItemFrame>
   );
 }
