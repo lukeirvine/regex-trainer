@@ -5,7 +5,7 @@ import { HighlightedString } from "@/components/HighlightedString";
 import { nextIncomplete } from "@/content";
 import type { Mode } from "@/content/types";
 import { compile, highlightSegments } from "@/lib/regex";
-import { getProgress } from "@/lib/progress";
+import { getMasteryCount, getProgress } from "@/lib/progress";
 import { requireUserId } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Dashboard" };
@@ -45,7 +45,12 @@ export default function Home() {
             <div className="card-body">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h2 className="card-title text-2xl">{m.title}</h2>
+                  <h2 className="card-title text-2xl">
+                    {m.title}
+                    <Suspense fallback={null}>
+                      <MasteryBadge mode={m.mode} />
+                    </Suspense>
+                  </h2>
                   <p className="text-base-content/70 mt-1">{m.blurb}</p>
                 </div>
                 <Suspense fallback={<div className="skeleton size-16 shrink-0 rounded-full" />}>
@@ -88,6 +93,23 @@ async function ModeProgress({ mode }: { mode: Mode }) {
     >
       {progress.completed.size}/{progress.total}
     </div>
+  );
+}
+
+async function MasteryBadge({ mode }: { mode: Mode }) {
+  const count = await getMasteryCount(await requireUserId(), mode);
+  if (count === 0) return null;
+  const label = `Completed and reset ${count} ${count === 1 ? "time" : "times"}`;
+  return (
+    <span className="tooltip font-normal" data-tip="Completions">
+      <span
+        className="badge badge-accent text-accent-content gap-1 font-semibold tabular-nums"
+        aria-label={label}
+      >
+        <span aria-hidden="true">🏆</span>
+        {count}
+      </span>
+    </span>
   );
 }
 

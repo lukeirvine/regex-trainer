@@ -1,5 +1,5 @@
 import "server-only";
-import { and, asc, desc, eq, isNotNull, isNull, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gte, isNotNull, isNull, sql } from "drizzle-orm";
 import { totalItems } from "@/content";
 import type { Mode } from "@/content/types";
 import { getDb } from "@/db";
@@ -70,6 +70,24 @@ export async function getHistory(userId: string, mode: Mode): Promise<HistoryEnt
     completedCount: r.completedCount ?? 0,
     totalCount: r.totalCount ?? 0,
   }));
+}
+
+/** How many runs of a mode the user reset only after finishing every item. */
+export async function getMasteryCount(userId: string, mode: Mode): Promise<number> {
+  const db = await getDb();
+  const [row] = await db
+    .select({ count: sql<number>`count(*)::int` })
+    .from(runs)
+    .where(
+      and(
+        eq(runs.userId, userId),
+        eq(runs.mode, mode),
+        isNotNull(runs.endedAt),
+        sql`${runs.totalCount} > 0`,
+        gte(runs.completedCount, runs.totalCount),
+      ),
+    );
+  return row?.count ?? 0;
 }
 
 export async function recordCompletion(
